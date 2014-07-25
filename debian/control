@@ -1,0 +1,15 @@
+Source: libbms
+Section: libs
+Priority: extra
+Maintainer: Jose Roberto B. de A. Monteiro <betoes@member.fsf.org>
+Build-Depends: debhelper (>> 3.0.0)
+Standards-Version: 3.5.2
+
+Package: libbms
+Architecture: any
+Depends: libglib2.0-0
+Description: Libray with byte, string and math facilities
+ This library contains facilities to manipulate byte, float and int
+ arrays. It also contains some string functions, as strtrim,
+ string-split, etc, and some mathematical functions, as waveforms
+ generator as trapezoidal functions, squavewave functions, etc.

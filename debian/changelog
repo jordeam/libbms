@@ -1,0 +1,24 @@
+libbms (1.0-5) squeeze; urgency=low
+
+  * For new distro
+
+ -- Jose Roberto B. de A. Monteiro <jrm@member.fsf.org>  Tue, 17 Aug 2010 11:31:14 -0200
+
+libbms (1.0-4) stable; urgency=low
+
+  * Improving runge interface in runge5.c
+
+ -- Jose Roberto B. de A. Monteiro <betoes@member.fsf.org>  Sat,  8 Nov 2003 11:31:14 -0200
+
+libbms (1.0-2) stable; urgency=high
+
+  * Initial Release.
+
+ -- Jose Roberto B. de A. Monteiro <betoes@autsens.com>  Sat,  8 Nov 2003 11:31:14 -0200
+
+libbms (1.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Jose Roberto B. de A. Monteiro <betoes@autsens.com>  Sat,  8 Nov 2003 11:31:14 -0200
+

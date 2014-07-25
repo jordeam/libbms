@@ -1,0 +1,33 @@
+(defun solve-bipartition-old (f x1 x2 error max-number)
+  (let ((temp x1)
+        (ntries 0)
+        (dx 0)
+        (xm 0)
+        (fm 0)
+        (f1 0)
+        (f2 0)
+        (max-number-of-tries (or max-number max-number-of-tries)))
+    (if (> x1 x2)
+        (progn
+          (setq temp x1)
+          (setq x1 x2)
+          (setq x2 temp)))
+    (setq ntries 0)
+    (setq dx (/ (- x2 x1) max-number-of-tries))
+    (while (and (> (abs (progn
+                          (setq xm (/ (+ x1 x2) 2.0))
+                          (setq fm (funcall f xm))
+                          fm))
+                   error)
+                (< ntries max-number-of-tries))
+      (setq f1 (funcall f x1))
+      (setq f2 (funcall f x2))
+      (cond
+       ((< (* f1 fm) 0) (setq x2 xm))
+       ((< (* f2 fm) 0) (setq x1 xm))
+       (t (setq ntries (+ 1 ntries))
+             (setq x1 (+ x1 dx)))))
+    (list xm (not (= ntries max-number-of-tries)))))
+
+(solve-bipartition-old (defun besta (x) (cos x)) -1 1.9 0.01 10)
+
