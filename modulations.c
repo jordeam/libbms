@@ -21,7 +21,7 @@ struct modulation modulations[] = {
   { mhcos, "mhcos", "Half cosine" },
   { mhsin, "mhsin", "Half sine" },
   { msqr180, "msqr180", "Squarewave 180 degrees"},
-  { msingle, "msingle", "Single pulse width modulation"},
+  { msimple, "msimple", "Simple pulse width modulation"},
   { (void*) triang_cos, "triang_cos", "Triangular in cossine phase" },
   { (void*) triang_sin, "triang_sin", "Triangular in sine phase" },
   { NULL, NULL, NULL }
@@ -258,7 +258,7 @@ double msqr180(double M, double theta) {
 /*
   M is the value of delta in rad
 */
-double msingle(double M, double theta) {
+double msimple(double M, double theta) {
   while (theta < 0)
     theta += M_2PI;
   while (theta >= M_2PI)

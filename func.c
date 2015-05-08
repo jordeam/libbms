@@ -5,17 +5,16 @@
 
 int inCicle(int i, int SIZE) {
   int n;
-  n=i%SIZE;
-  return (n<0) ? n+SIZE : n;
-  }
+  n = i % SIZE;
+  return (n < 0) ? n + SIZE : n;
+}
 
-double in_range(double x, double angle)
-{
-  x/=angle;
+double in_range(double x, double period) {
+  x /= period;
   x=frac(x);
   if (x>0.5)
     x-=1;
-  return angle*x;
+  return period * x;
 }
 
 double RMS(double *D, int N)

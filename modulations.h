@@ -35,6 +35,6 @@ double msquare120(double M, double theta);
 double mhcos(double M, double theta);
 double mhsin(double M, double theta);
 double msqr180(double M, double theta);
-double msingle(double M, double theta);
+double msimple(double M, double theta);
 
 #endif
