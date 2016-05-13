@@ -15,8 +15,8 @@ struct fourse {
 
 typedef struct fourse fourse_t;
 
-#define fourse_a(fs, i) (*((double *)(fs->a->data) + i))
-#define fourse_b(fs, i) (*((double *)(fs->b->data) + i))
+#define fourse_a(fs, i) rvector_get(fs->a, i)
+#define fourse_b(fs, i) rvector_get(fs->b, i) 
 
 double fourse_sin(double *, int, int);
 double fourse_0(double *, int);
@@ -52,5 +52,10 @@ void fourse_calcRealCoefs(fourse_t * self);
 
 void putRealCoefs(fourse_t * self, FILE * stream);
 void putComplexCoefs(fourse_t * self, FILE * stream);
+
+void fourse_put(fourse_t * self, int i, double val_a, double val_b);
+double fourse_get_a(fourse_t * self, int n);
+double fourse_get_b(fourse_t * self, int n);
+int fourse_size(fourse_t * self);
 
 #endif

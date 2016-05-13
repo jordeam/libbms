@@ -21,10 +21,6 @@ fourse_t * fourse_new(int nharm) {
   self -> a = rvector_new(nharm+1);
   self -> b = rvector_new(nharm+1);
   self -> n = nharm;
-  log_msg("fourses_new");
-  memset(self->a->data, 0, (nharm+1) * sizeof(double));
-  memset(self->b->data, 0, (nharm+1) * sizeof(double));
-  log_msg("fourses_new end");
   return self;
 }
 
@@ -33,11 +29,9 @@ fourse_t * fourse_new(int nharm) {
 */
 fourse_t * fourse_dup(fourse_t * self) {
   fourse_t * clone = fourse_new(self->n);
-  clone -> n = self -> n;
-  /* copy a and b revctors from self to clone */
-  memcpy(clone->a->data, self->a->data, self->n * sizeof(double));
-  memcpy(clone->b->data, self->b->data, self->n * sizeof(double));
-  log_msg("fourse_dup done");
+  /* copy a and b rvectors from self to clone */
+  clone->a = rvector_dup(self->a);
+  clone->b = rvector_dup(self->b);
   return clone;
 }
 
@@ -48,12 +42,12 @@ void fourse_add_angle(fourse_t * self, double gamma) {
   int i;
   double c0, c1, an, bn;
   for (i = 1; i <= self -> n; i++) {
-    an = fourse_a(self, i);
-    bn = fourse_b(self, i);
-    c0 = sqrt(sqr(fourse_a(self, i)) + sqr(fourse_b(self, i)));
-    fourse_a(self, i) = an * cos(i * gamma) + bn * sin(i * gamma);
-    fourse_b(self, i) = bn * cos(i * gamma) - an * sin(i * gamma);
-    c1 = sqrt(sqr(fourse_a(self, i)) + sqr(fourse_b(self, i)));
+    an = rvector_get(self->a, i);
+    bn = rvector_get(self->b, i);
+    c0 = sqrt(sqr(rvector_get(self->a, i)) + sqr(rvector_get(self->b, i)));
+    rvector_put(self->a, i, an * cos(i * gamma) + bn * sin(i * gamma));
+    rvector_put(self->b, i, bn * cos(i * gamma) - an * sin(i * gamma));
+    c1 = sqrt(sqr(rvector_get(self->a, i)) + sqr(rvector_get(self->b, i)));
     if (c0 != c1)
       log_msg_3("in fourse_add_angle: i=%d, c0=%g, c1=%g", i, c0, c1);
   }
@@ -71,8 +65,8 @@ void fourse_add(fourse_t * res, fourse_t * four1, fourse_t * four2) {
     n = four2 -> n;
   res -> n = n;
   for (i = 0; i <= n; i++) {
-    fourse_a(res,i) = fourse_a(four1,i) + fourse_a(four2,i);
-    fourse_b(res,i) = fourse_b(four1,i) + fourse_b(four2,i);
+    rvector_put(res->a, i, rvector_get(four1->a, i) + rvector_get(four2->a, i));
+    rvector_put(res->b, i, rvector_get(four1->b, i) + rvector_get(four2->b, i));
   }
 }
 
@@ -87,8 +81,8 @@ void fourse_sub(fourse_t * res, fourse_t * four1, fourse_t * four2) {
     n = four2 -> n;
   res -> n = n;
   for (i = 0; i <= n; i++) {
-    fourse_a(res,i) = fourse_a(four1,i) - fourse_a(four2,i);
-    fourse_b(res,i) = fourse_b(four1,i) - fourse_b(four2,i);
+    rvector_put(res->a, i, fourse_a(four1,i) - fourse_a(four2,i));
+    rvector_put(res->b, i, fourse_b(four1,i) - fourse_b(four2,i));
   }
 }
 
@@ -96,14 +90,14 @@ void fourse_sub(fourse_t * res, fourse_t * four1, fourse_t * four2) {
   Return c=sqrt(a^2+b^2) for ith coefficient
 */
 double fourse_c(fourse_t * self, int i) {
-  return sqrt(sqr(fourse_a(self, i)) + sqr(fourse_b(self, i)));
+  return sqrt(sqr(rvector_get(self->a, i)) + sqr(rvector_get(self->b, i)));
 }
 
 /*
   Return the angle of complex number formed by real and imaginary of i_th coefficients
 */
 double fourse_phi(fourse_t * self, int i) {
-  return atan2(fourse_b(self, i), fourse_a(self, i));
+  return atan2(rvector_get(self->b, i), rvector_get(self->a, i));
 }
 
 /*
@@ -116,16 +110,53 @@ fourse_t * fourse_initWithWav(fourse_t * self, int n, double * data, int data_si
 }
 
 /*
-  load coeficients from a file
+  Put values in fourier serie 
+*/
+void fourse_put(fourse_t * self, int i, double val_a, double val_b) {
+  if (i > self->n)
+    self->n = i;
+  if (i >= self->a->n)
+    rvector_resize(self->a, i+1);
+  rvector_put(self->a, i, val_a);
+  if (i >= self->b->n)
+    rvector_resize(self->b, i+1);
+  rvector_put(self->b, i, val_b);
+}
+
+double fourse_get_a(fourse_t * self, int n) {
+  if (n > self->n)
+    return 0;
+  else
+    return rvector_get(self->a, n);
+}
+
+double fourse_get_b(fourse_t * self, int n) {
+  if (n > self->n)
+    return 0;
+  else
+    return rvector_get(self->b, n);
+}
+
+int fourse_size(fourse_t * self) {
+  return self->n;
+}
+
+/*
+  load coeficients from a file DEPRECATED: DO NOT USE
 */
 int fourse_load_dat(fourse_t * self, const char * name)  {
   FILE  *f;
   char  *s, c[STRSIZE];
   double ai, bi, lixo;
   int   i;
+
+  rvector_resize(self->a, MAXHARM + 1);
+  rvector_resize(self->b, MAXHARM + 1);
   
-  for(i = 0; i < MAXHARM; i++)
-    fourse_a(self, i) = fourse_b(self, i)=0;
+  for(i = 0; i < MAXHARM; i++) {
+    rvector_put(self->a, i, 0);
+    rvector_put(self->b, i, 0);
+  }
   
   if(!(f = fopen(name,"r")))
     return 0;
@@ -138,8 +169,8 @@ int fourse_load_dat(fourse_t * self, const char * name)  {
     if (frac(lixo)==0) {
       i=(int) lixo;
       if (i<MAXHARM) {
-	if (ai!=0) fourse_a(self,i)=ai;
-	if (bi!=0) fourse_b(self,i)=bi;
+	if (ai!=0) rvector_put(self->a, i, ai);
+	if (bi!=0) rvector_put(self->b, i, bi);
 	if (self->n<i) self->n=i;
       }
     }
@@ -156,7 +187,7 @@ double fourse_get_norm(fourse_t * self) {
   double sum;
   sum = sqr(fourse_a(self, 0));
   for (i = 1; i < self -> n; i++) 
-    sum += sqr(fourse_a(self, i)) + sqr(fourse_b(self, i));
+    sum += sqr(rvector_get(self->a, i)) + sqr(rvector_get(self->b, i));
   return sqrt(sum);
 }
 
@@ -169,7 +200,7 @@ double fourse_eval(fourse_t * self, double x)
   int   i;
   sum = fourse_a(self,0);
   for (i=1; i <= self->n; i++)
-    sum += fourse_a(self, i) * cos(i * x) + fourse_b(self, i) * sin(i * x);
+    sum += rvector_get(self->a, i) * cos(i * x) + rvector_get(self->b, i) * sin(i * x);
   return sum;
 }
 
@@ -182,7 +213,7 @@ double fourse_eval_sin(fourse_t * self, double x)
   int i;
   sum = 0;
   for (i = 0; i < self -> n; i++)
-    sum += fourse_b(self, i) * sin(i * x);
+    sum += rvector_get(self->b, i) * sin(i * x);
   return sum;
 }
 
@@ -195,7 +226,7 @@ double fourse_eval_cos(fourse_t * self, double x)
   int   i;
   sum =fourse_a(self,0);
   for (i = 0; i <= self -> n; i++)
-    sum += fourse_a(self, i) * cos(i * x);
+    sum += rvector_get(self->a, i) * cos(i * x);
   return sum;
 }
 
@@ -205,11 +236,11 @@ double fourse_eval_cos(fourse_t * self, double x)
 */
 void fourse_calc_all(fourse_t * self, double *data, int size) {
   int i;
-fourse_a(self,0) = fourse_0(data, size);
-fourse_b(self,0) = 0;
+  rvector_put(self->a ,0, fourse_0(data, size));
+  rvector_put(self->b, 0, 0);
   for (i = 1; i <= self -> n; i++) {
-    fourse_a(self, i) = fourse_cos(data, size, i);
-    fourse_b(self, i) = fourse_sin(data, size, i);
+    rvector_put(self->a, i, fourse_cos(data, size, i));
+    rvector_put(self->a, i, fourse_sin(data, size, i));
   }
 }
 
@@ -219,10 +250,9 @@ fourse_b(self,0) = 0;
 void fourse_calc_an(fourse_t * self, double *data, int size)
 {
   int i;
-fourse_a(self,0)=fourse_0(data, size);
+  rvector_put(self->a, 0, fourse_0(data, size));
   for (i = 1; i < self -> n; i++) 
-    fourse_a(self, i)=fourse_cos(data, size, i);
-  self -> n = MAXHARM - 1;
+    rvector_put(self->a, i, fourse_cos(data, size, i));
 }
 
 /*
@@ -231,10 +261,9 @@ fourse_a(self,0)=fourse_0(data, size);
 void fourse_calc_bn(fourse_t * self, double *data, int size)
 {
   int i;
-  fourse_b(self,0) = 0;
-  for (i=1; i<MAXHARM; i++) 
-    fourse_b(self,i)=fourse_sin(data, size, i);
-  self->n=MAXHARM-1;
+  rvector_put(self->b, 0, 0);
+  for (i = 1; i < self->n; i++) 
+    rvector_put(self->b, i, fourse_sin(data, size, i));
 }
 
 /*
@@ -255,10 +284,10 @@ void fourse_write_dat(fourse_t * self, char *name)
   
   for (i=1; i<self->n; i++) {
     fprintf(fout, "%g %g %g\n", i - 0.2, 0.00, 0.00);
-    fprintf(fout, "%g %g %g\n", i - 0.2, 0.00, fourse_b(self, i));
-    fprintf(fout, "%g %g %g\n", i - 0.0, 0.00, fourse_b(self, i));
-    fprintf(fout, "%g %g %g\n", i + 0.0, fourse_a(self, i), 0.00);
-    fprintf(fout, "%g %g %g\n", i + 0.2, fourse_a(self, i), 0.00);
+    fprintf(fout, "%g %g %g\n", i - 0.2, 0.00, rvector_get(self->b, i));
+    fprintf(fout, "%g %g %g\n", i - 0.0, 0.00, rvector_get(self->b, i));
+    fprintf(fout, "%g %g %g\n", i + 0.0, rvector_get(self->a, i), 0.00);
+    fprintf(fout, "%g %g %g\n", i + 0.2, rvector_get(self->a, i), 0.00);
     fprintf(fout, "%g %g %g\n", i + 0.2, 0.00, 0.00);
   }
   
@@ -330,9 +359,9 @@ void fourse_free(fourse_t * self) {
 int fourse_puto(fourse_t * self, FILE * stream) {
   int i;
   for (i = 0; i < self -> n; i++)
-    fprintf(stream, "%d %g %g %g %g\n", i, fourse_a(self, i), fourse_b(self, i)
-	    , sqrt(sqr(fourse_a(self, i)) + sqr(fourse_b(self, i)))
-	    , atan2(fourse_b(self, i), fourse_a(self, i))
+    fprintf(stream, "%d %g %g %g %g\n", i, rvector_get(self->a, i), rvector_get(self->b, i)
+	    , sqrt(sqr(rvector_get(self->a, i)) + sqr(rvector_get(self->b, i)))
+	    , atan2(rvector_get(self->b, i), rvector_get(self->a, i))
 	    );
   return self -> n;
 }
@@ -356,9 +385,9 @@ int fourse_geto(fourse_t * self, FILE * stream) {
 	  self -> n = line;
       }
       else if (i == 1)
-	fourse_a(self, line) = atof(si);
+	rvector_put(self->a, line, atof(si));
       else if (i == 2)
-	fourse_b(self, line) = atof(si);
+	rvector_put(self->b, line, atof(si));
       else
 	break;
       i++;

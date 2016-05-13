@@ -62,7 +62,7 @@ int rvector_load(rvector_t * self, const char *name)
   double x;
 
   if(!(f=fopen(name, "r"))) {
-    fprintf(stdout, "Can't open %s\n", name);
+    fprintf(stderr, "Can't open %s\n", name);
     return 0;
   }
 

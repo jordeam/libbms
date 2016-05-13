@@ -20,7 +20,7 @@ HEADERFILES = asmline.h bcomplex.h bvector.h CObject.h \
 	strbms.h ripple.h runge.h rvector.h cvector.h \
 	sysconst.h \
 	transfor.h vvector.h wav.h \
-	runge51.h
+	runge51.h trigger.h
 #	serial_raw.h 
 #	LnList.h LnElem.h AsmLine.h
 
@@ -32,8 +32,8 @@ CSRCS = asmline.c bcomplex.c bvector.c cvector.c CObject.c \
 	modulations.c nlsol.c \
 	ondas.c ondas2.c polinom.c \
 	ripple.c runge5.c runge51.c rvector.c strss.c string_split.c \
-	transfor.c vvector.c wav.c \
-	#	serial_raw.c # LnList.c LnElem.c AsmLine.c
+	transfor.c vvector.c wav.c trigger.c
+#	serial_raw.c # LnList.c LnElem.c AsmLine.c
 
 SRCS = $(CSRCS) # $(OBJCSRCS)
 
