@@ -46,7 +46,14 @@ uint32_t bvec_getw(bvector * self, int i) {
   Put an element in data
 */
 int bvec_put(bvector * self, int i, uint8_t x) {
-  return (int) vvector_put(self, i, &x);
+  /* Round i in n */
+  if (i >=0 && i < self->n) {
+    ((uint8_t *) self->data)[i] = x;
+    return 1;
+  }
+  else
+    /* else, do not put anything */
+    return 0;
 }
 
 /*

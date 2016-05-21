@@ -17,13 +17,12 @@
 /* 
    The son has an identical structure
 */
-typedef vvector_t rvector_t;
+typedef struct vvec rvector_t;
 
 /* Identical methods */
 
 #define rvector_alloc vvector_alloc
 #define rvector_init(self, n) vvector_init(self, n, sizeof(double))
-#define rvector_new(n) rvector_init(rvector_alloc(), n);
 #define rvector_destroy(self) vvector_destroy(self)
 #define rvector_free(self) vvector_destroy(self)
 #define rvector_resize(self, n) vvector_resize(self, n)
@@ -31,6 +30,8 @@ typedef vvector_t rvector_t;
 #define rvector_setDebug(debug_mode) vvector_setDebug(debug_mode)
 #define rvector_getDebug() vvector_getDebug()
 #define rvector_dup(self) vvector_dup(self)
+
+rvector_t * rvector_new(int n);
 
 /* 
    Accessing elements
@@ -44,7 +45,7 @@ typedef vvector_t rvector_t;
 /* Callback methods */
 
 double rvector_get(rvector_t * self, int i);
-int rvector_put(rvector_t * self, int i, double x);
+void rvector_put(rvector_t * self, int i, double x);
 int rvector_append(rvector_t * self, double x);
 
 /* 
@@ -71,6 +72,8 @@ int rvector_load(rvector_t * self, const char *name);
 int rvector_write(rvector_t * self, const char *name);
 int rvector_fputs(rvector_t * self, FILE * stream);
 int rvector_fgets(rvector_t * self, FILE * stream);
+rvector_t * rvector_create_from_string(const char *str);
+rvector_t *rvector_from_file_line(const char *filename, int line);
 int rvector_load_dag(rvector_t * self, int column, const char* name);
 int rvector_write_dag(rvector_t * self, const char *name);
 int rvector_read_column(rvector_t * self, const char * filename, int column);

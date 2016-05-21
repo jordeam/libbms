@@ -23,12 +23,15 @@ complex cvector_get(cvector_t * self, int i) {
 /*
   Put en element in data
 */
-int cvector_put(cvector_t * self, int i, complex xin) {
-  complex x = xin;
-  if (vvector_getDebug() & 4) {
-    printf("cvector_put %d (%g,%g)\n", i, creal(x), cimag(x));
+int cvector_put(cvector_t * self, int i, complex x) {
+  /* Round i in n */
+  if (i >=0 && i < self->n) {
+    ((complex *) self->data)[i] = x;
+    return 1;
   }
-  return (int) vvector_put(self, i, &x);
+  else
+    /* else, do not put anything */
+    return 0;
 }
 
 /*

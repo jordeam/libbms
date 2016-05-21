@@ -47,9 +47,9 @@ char * strsubst(char * s, char * pat, char * subs) {
   char * ss;
   int len;
 
-  sp = (char *) strstr(s, pat);
+  sp = strstr(s, pat);
   while (sp) {
-    ss = (char *) strdup((char *)((int) sp + strlen(pat)));
+    ss = strdup(sp + strlen(pat));
     * sp = '\0';
     len = strlen(s) + strlen(subs);
     strcat(s, subs);
@@ -59,7 +59,7 @@ char * strsubst(char * s, char * pat, char * subs) {
     printf("s = %s, pat = %s, subs = %s, ss = %s\n", s, pat, subs, ss);
 #endif
     if (len < strlen(s))
-      sp = (char *) strstr(s+len, pat);
+      sp = strstr(s+len, pat);
     else
       break;
   }
@@ -72,9 +72,9 @@ char * strnsubst(char * s, char * pat, char * subs, int n) {
   int len;
   int i = 0;
 
-  sp = (char *) strstr(s, pat);
+  sp = strstr(s, pat);
   while (sp && (i < n || i < 0)) {
-    ss = (char *) strdup((char *)((int) sp + strlen(pat)));
+    ss = strdup(sp + strlen(pat));
     * sp = '\0';
     len = strlen(s) + strlen(subs);
     strcat(s, subs);
@@ -84,7 +84,7 @@ char * strnsubst(char * s, char * pat, char * subs, int n) {
     printf("s = %s, pat = %s, subs = %s, ss = %s\n", s, pat, subs, ss);
 #endif
     if (len < strlen(s))
-      sp = (char *) strstr(s+len, pat);
+      sp = strstr(s+len, pat);
     else
       break;
     i++;

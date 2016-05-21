@@ -20,23 +20,54 @@
 */
 
 /*
-  Get an element from data.
+  Alocates dynamic memory for data of an rvector object.
+  Initializes data of an rvector object with 0.
 */
-double rvector_get(rvector_t * self, int i) {
-  double x;
-  vvector_get(self, i, &x);
-  return x;
+rvector_t * rvector_new(int n) {
+  int blocks;
+  rvector_t * self = (rvector_t *) calloc(1, sizeof(rvector_t));
+  
+  if (!self)
+    /* error occurred allocating data */
+    return NULL;
+  
+  blocks = n / VVECTOR_BLKSIZE; 
+  blocks++; // minimum of 1 block
+
+  //  printf("blocks = %d\n", blocks);
+  self -> n = n;
+  self -> maxn = blocks * VVECTOR_BLKSIZE;
+  self -> elm_size = sizeof(double);
+  
+  //  printf("elm_size = %d    maxn = %d    n = %d\n", elm_size, self->maxn, n);
+  if (!(self -> data = (void *) calloc(self -> maxn, self -> elm_size))) {
+    free(self);
+    return NULL;
+  }
+  //  printf(" elm_size = %d\n", elm_size);
+  return self;
 }
 
 /*
-  Put en element in data
+  Get an element from data. If i is greater than n, it will cycle and pick the i % n element
 */
-int rvector_put(rvector_t * self, int i, double xin) {
-  double x = xin;
-  if (vvector_getDebug() & 4) {
-    printf("rvector_put %d %g\n", i, x);
-  }
-  return (int) vvector_put(self, i, &x);
+double rvector_get(rvector_t * self, int i) {
+  if (i >= self->n || i < 0)
+    i %= self->n;
+  if (i < 0)
+    i += self->n;
+  return ((double*)self->data)[i];
+}
+
+/*
+  Put en element in data. If i is greater than size n, it will cycle to the beggining, the same if i is negative.
+*/
+void rvector_put(rvector_t * self, int i, double x) {
+  if (i >= self->n || i < 0)
+    i %= self->n;
+  if (i < 0)
+    i += self->n;
+  ((double*)self->data)[i] = x;
 }
 
 /*
@@ -93,7 +124,7 @@ int rvector_load(rvector_t * self, const char *name)
 int rvector_fgets(rvector_t * self, FILE * stream)
 {
   char * s = NULL;
-  unsigned int len = 0;
+  size_t len = 0;
 
   self -> n = 0; /* resets size */
 
@@ -179,6 +210,42 @@ int rvector_write_dag(rvector_t * self, const char *name)
 }
 
 /*
+  Creates an  rvector from a string  with data separeted by  spaces ot
+  tabs. The returned value, a new rvector, must be freed.
+*/
+rvector_t * rvector_create_from_string(const char *str) {
+  char * si, * sn;
+  rvector_t * r = rvector_new(0);
+  sn = (char*) str;
+  while((si = strsep(&sn, " \t\n\r")) && strlen(si))
+    rvector_append(r, atof(si));
+  return r;
+}
+
+/* 
+   Get a rvector from a single line  in a file, with data separated by
+   spaces or  tabs, line ranging  from 0  to n-1.  The  returned value
+   must  be freed.  This returns  NULL  if there  is no  vector to  be
+   created.
+*/
+rvector_t *rvector_from_file_line(const char *filename, int line) {
+  FILE *f = fopen(filename, "r");
+  char *s = NULL;
+  size_t n = 0;
+  int i = 0;
+  while(getline(&s, &n, f) > 0) {
+    if (i == line)
+      return rvector_create_from_string(s);
+    i++;
+  }
+  free(s);
+  return NULL;
+}
+
+
+  
+  
+/*
   reads data from a file, considering his column
 */
 int rvector_read_column(rvector_t * self, const char * filename, int column) {
@@ -195,7 +262,7 @@ int rvector_read_column(rvector_t * self, const char * filename, int column) {
     sn = s;
     i = 0;
     val = 0;
-    while(si = strsep(&sn, " \t\n\r")) {
+    while((si = strsep(&sn, " \t\n\r"))) {
       if (strlen(si)) {
         if (i == column) {
           val = atof(si);
