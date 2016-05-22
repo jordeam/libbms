@@ -49,9 +49,18 @@ rvector_t * rvector_new(int n) {
 }
 
 /*
-  Get an element from data. If i is greater than n, it will cycle and pick the i % n element
+  Get an element from data. If i is outside the limits, return 0
 */
 double rvector_get(rvector_t * self, int i) {
+  if (i >= self->n || i < 0)
+    return 0;
+  return ((double*)self->data)[i];
+}
+
+/*
+  Get an element from data. If i is greater than n, it will cycle and pick the i % n element
+*/
+double rvector_get_cycle(rvector_t * self, int i) {
   if (i >= self->n || i < 0)
     i %= self->n;
   if (i < 0)
@@ -60,13 +69,11 @@ double rvector_get(rvector_t * self, int i) {
 }
 
 /*
-  Put en element in data. If i is greater than size n, it will cycle to the beggining, the same if i is negative.
+  Put en element in data. If i is outside the limits, do not put.
 */
 void rvector_put(rvector_t * self, int i, double x) {
   if (i >= self->n || i < 0)
-    i %= self->n;
-  if (i < 0)
-    i += self->n;
+    return 0;
   ((double*)self->data)[i] = x;
 }
 
@@ -209,42 +216,6 @@ int rvector_write_dag(rvector_t * self, const char *name)
   return 1;
 }
 
-/*
-  Creates an  rvector from a string  with data separeted by  spaces ot
-  tabs. The returned value, a new rvector, must be freed.
-*/
-rvector_t * rvector_create_from_string(const char *str) {
-  char * si, * sn;
-  rvector_t * r = rvector_new(0);
-  sn = (char*) str;
-  while((si = strsep(&sn, " \t\n\r")) && strlen(si))
-    rvector_append(r, atof(si));
-  return r;
-}
-
-/* 
-   Get a rvector from a single line  in a file, with data separated by
-   spaces or  tabs, line ranging  from 0  to n-1.  The  returned value
-   must  be freed.  This returns  NULL  if there  is no  vector to  be
-   created.
-*/
-rvector_t *rvector_from_file_line(const char *filename, int line) {
-  FILE *f = fopen(filename, "r");
-  char *s = NULL;
-  size_t n = 0;
-  int i = 0;
-  while(getline(&s, &n, f) > 0) {
-    if (i == line)
-      return rvector_create_from_string(s);
-    i++;
-  }
-  free(s);
-  return NULL;
-}
-
-
-  
-  
 /*
   reads data from a file, considering his column
 */
