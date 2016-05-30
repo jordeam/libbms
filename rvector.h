@@ -45,6 +45,7 @@ rvector_t * rvector_new(int n);
 /* Callback methods */
 
 double rvector_get(rvector_t * self, int i);
+double rvector_get_cycle(rvector_t * self, int i);
 void rvector_put(rvector_t * self, int i, double x);
 int rvector_append(rvector_t * self, double x);
 

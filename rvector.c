@@ -49,9 +49,18 @@ rvector_t * rvector_new(int n) {
 }
 
 /*
-  Get an element from data. If i is greater than n, it will cycle and pick the i % n element
+  Get an element from data. If i is outside the limits, return 0
 */
 double rvector_get(rvector_t * self, int i) {
+  if (i >= self->n || i < 0)
+    return 0;
+  return ((double*)self->data)[i];
+}
+
+/*
+  Get an element from data. If i is greater than n, it will cycle and pick the i % n element
+*/
+double rvector_get_cycle(rvector_t * self, int i) {
   if (i >= self->n || i < 0)
     i %= self->n;
   if (i < 0)
@@ -60,13 +69,11 @@ double rvector_get(rvector_t * self, int i) {
 }
 
 /*
-  Put en element in data. If i is greater than size n, it will cycle to the beggining, the same if i is negative.
+  Put en element in data. If i is outside the limits, do not put.
 */
 void rvector_put(rvector_t * self, int i, double x) {
   if (i >= self->n || i < 0)
-    i %= self->n;
-  if (i < 0)
-    i += self->n;
+    return;
   ((double*)self->data)[i] = x;
 }
 
