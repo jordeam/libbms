@@ -242,8 +242,6 @@ rvector_t *rvector_from_file_line(const char *filename, int line) {
   return NULL;
 }
 
-
-  
   
 /*
   reads data from a file, considering his column
