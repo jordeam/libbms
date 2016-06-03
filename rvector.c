@@ -126,24 +126,32 @@ int rvector_load(rvector_t * self, const char *name)
   x[2]
   ...
   x[n-1]
-  Return 1 if success, 0 in case of failure
+  Return the number of read elements if success, -1 in case of failure
 */
 int rvector_fgets(rvector_t * self, FILE * stream)
 {
   char * s = NULL;
   size_t len = 0;
-
+  int n;
+  
   self -> n = 0; /* resets size */
 
+  n = 0;
+  while (getline(& s, & len, stream) > 0)
+    n++;
+
+  fseek(stream, 0, SEEK_SET);
+
+  rvector_resize(self, n);
+  n = 0;
   while (getline(& s, & len, stream) > 0) {
-    if (strlen(s) > 0)
-      if (!rvector_append(self, atof(s))) {
-        /* error */
-        return 0;
-      }
+    if (strlen(s) > 0 && n < self->n)
+      ((double *) self->data)[n] = atof(s);
+    n++;
   }
+  
   /* success */
-  return 1;
+  return n;
 }
 
 /*
@@ -221,11 +229,38 @@ int rvector_write_dag(rvector_t * self, const char *name)
   tabs. The returned value, a new rvector, must be freed.
 */
 rvector_t * rvector_create_from_string(const char *str) {
-  char * si, * sn;
-  rvector_t * r = rvector_new(0);
-  sn = (char*) str;
-  while((si = strsep(&sn, " \t\n\r")) && strlen(si))
-    rvector_append(r, atof(si));
+  char *si, *sn;
+  rvector_t *r;
+  int n, i, len = strlen(str);
+  sn = (char *) str;
+  n = 0;
+  while((si = strsep(&sn, " \t\n\r")))
+    if (strlen(si) > 0)
+      n++;
+  r = rvector_new(n);
+  /* printf("rvector_new(%d)\n", n); */
+  si = (char *) str;
+  i = 0;
+  while (*si == '\0' && i < len) {
+    si++;
+    i++;
+  }
+  /* printf("si=0x%08x sn=0x%08x\n", si, sn); */
+  n = 0;
+  while (i < len) {
+    /* printf("%02x ", *si); */
+    if (strlen(si) > 0) {
+      /* printf("rvector_put(r, %d, %f)\n", n, atof(si)); */
+      rvector_put(r, n, atof(si));
+      n++;
+    }
+    si += strlen(si) + 1;
+    i += strlen(si) + 1;
+    while (*si == '\0' && si < sn) {
+      si++;
+      i++;
+    }
+  }
   return r;
 }
 
