@@ -13,7 +13,7 @@ double in_range(double x, double period) {
   x /= period;
   x=frac(x);
   if (x>0.5)
-    x-=1;
+    x-=1.0;
   return period * x;
 }
 
