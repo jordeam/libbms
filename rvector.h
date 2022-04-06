@@ -4,17 +4,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "wav.h"
 #include "vvector.h"
 
-/* 
+/*
    Defining type 'rvec':
    maxn is the maximum number of elements of data. It is evaluated from
    RVECTOR_BLKSIZE, wich defines the size of each BLOCK;
    n is the actual number of elements in data;
 */
 
-/* 
+/*
    The son has an identical structure
 */
 typedef struct vvec rvector_t;
@@ -33,13 +37,13 @@ typedef struct vvec rvector_t;
 
 rvector_t * rvector_new(int n);
 
-/* 
+/*
    Accessing elements
 */
 #define RVECTOR(self,i) (*((double *)(self->data) + i))
 #define rvector_n(self) vvector_n(self)
 #define rvector_maxn(self) vvector_maxn(self)
-// #define rvector_size(self) vvector_size(self) // not used 
+// #define rvector_size(self) vvector_size(self) // not used
 #define rvector_data(self) vvector_data(self)
 
 /* Callback methods */
@@ -49,10 +53,10 @@ double rvector_get_cycle(rvector_t * self, int i);
 void rvector_put(rvector_t * self, int i, double x);
 int rvector_append(rvector_t * self, double x);
 
-/* 
-   Calling old wav object 
+/*
+   Calling old wav object
 
-   wav object is obsolet, the routines bellow need to be written
+   wav object is obsolet, the routines bellow need to be rewritten
    directly on rvector object
 */
 
@@ -62,7 +66,7 @@ int rvector_append(rvector_t * self, double x);
 #define rvector_normalize(self) wav_normalize(self->data, self->n)
 #define rvector_getmax(self) wav_getmax(self->data, self->n)
 #define rvector_getmin(self)  wav_getmin(self->data, self->n)
-#define rvector_getin(self,t) wav_getin(self->data, self->n, t)
+#define rvector_getin(self,t) wav_getin((double *)self->data, self->n, t)
 #define rvector_putin(self,t,x) wav_putin(self->data, self->n, t, x)
 
 /*
@@ -83,5 +87,8 @@ double rvector_sqrsum (rvector_t *x);
 double rvector_avg(rvector_t *x);
 double rvector_rms(rvector_t *x);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

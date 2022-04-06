@@ -131,9 +131,6 @@ double wav_getmax(double * data, int n) {
   return max;
 }
 
-/*
-  get the minimum value of 'data' in 'data';
-*/
 double wav_getmin(double * data, int n) {
   double min;
   int i;
@@ -146,13 +143,10 @@ double wav_getmin(double * data, int n) {
   return min;
 }
 
-/*
-  get a value of 'data' in the range [0,1[, this range correspons to [0,'n'[
-*/
 double wav_getin(double * data, int n, double t)
 {
   int i;
-  if (!n)
+  if (n == 0)
     return 0;
   i=(int)(t*n);
   i %= n;

@@ -1,6 +1,10 @@
 #ifndef _ondas_h
 #define _ondas_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 double quad120(double);
 double quad180(double);
 double square_pulse(double theta, double theta_on, double theta_off);
@@ -22,5 +26,9 @@ double pwmdiss2(double M, double ang);
 double pwmdiss3(double M, double ang);
 double pwmdiss4(double M, double ang);
 double mcos_w_sat(double M, double ang);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

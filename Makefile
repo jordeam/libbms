@@ -31,7 +31,7 @@ CSRCS = asmline.c bcomplex.c bvector.c cvector.c CObject.c \
 	func.c integnum.c \
 	modulations.c nlsol.c \
 	ondas.c ondas2.c polinom.c \
-	ripple.c runge5.c runge51.c rvector.c strss.c string_split.c \
+	ripple.c runge5.c runge51.c rvector.c strss.c \
 	transfor.c vvector.c wav.c trigger.c
 #	serial_raw.c # LnList.c LnElem.c AsmLine.c
 

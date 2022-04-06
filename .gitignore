@@ -2,3 +2,8 @@
 *.a
 *.so
 *-stamp
+/debian/.debhelper/
+*.log
+/debian/libbms.substvars
+/debian/libbms/
+/debian/files

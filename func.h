@@ -1,6 +1,10 @@
 #ifndef _func_h
 #define _func_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* put i in the circular interval from 0 to n-1 */
 #define CCR(i, n) { i%=n; if (i<0) i+=n; }
 
@@ -29,5 +33,9 @@ double medabs(double *D, int N);
 
 /* return true if values have the same sign */
 #define samesign(x, y) (((x)<0 && (y)<0) || ((x)>=0 && (y)>=0))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

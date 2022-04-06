@@ -1,6 +1,10 @@
 #ifndef _trigger_h
 #define _trigger_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Trigger */
 struct trigger {
   /* Crossing time */
@@ -30,5 +34,9 @@ void trigger_clear(trigger_t * trig);
 int trigger_eval(trigger_t * trig, double value, double t);
 void trigger_reset(trigger_t *trig);
 int trigger_is_set(trigger_t *trig);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
