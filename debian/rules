@@ -6,7 +6,7 @@
 #export DH_VERBOSE=1
 
 # This is the debhelper compatibility version to use.
-export DH_COMPAT=9
+export DH_COMPAT=13
 
 
 
@@ -20,19 +20,19 @@ endif
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
-	# Add here commands to configure the package.
+# Add here commands to configure the package.
 
 	touch configure-stamp
 
 
 build: build-stamp
 
-build-stamp: configure-stamp 
+build-stamp: configure-stamp
 	dh_testdir
 
-	# Add here commands to compile the package.
+# Add here commands to compile the package.
 	$(MAKE)
-	#/usr/bin/docbook-to-man debian/macvad.sgml > macvad.1
+#/usr/bin/docbook-to-man debian/macvad.sgml > macvad.1
 
 	touch build-stamp
 
@@ -41,18 +41,18 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-	# Add here commands to clean up after the build process.
-	$(MAKE) distclean
+# Add here commands to clean up after the build process.
+	-$(MAKE) distclean
 
 	dh_clean
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_clean 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/macvad.
+# Add here commands to install the package into debian/macvad.
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/libbms
 
 
@@ -64,7 +64,7 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-#	dh_installdebconf	
+#	dh_installdebconf
 	dh_installdocs
 	dh_installexamples
 #	dh_installmenu
@@ -77,7 +77,7 @@ binary-arch: build install
 	dh_installman
 	dh_installinfo
 #	dh_undocumented
-	dh_installchangelogs 
+	dh_installchangelogs
 	dh_link
 	dh_strip
 	dh_compress

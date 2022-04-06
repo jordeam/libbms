@@ -2,7 +2,7 @@ Source: libbms
 Section: libs
 Priority: extra
 Maintainer: Jose Roberto B. de A. Monteiro <betoes@member.fsf.org>
-Build-Depends: debhelper (>> 3.0.0)
+Build-Depends: debhelper (>> 11.0.0)
 Standards-Version: 3.5.2
 
 Package: libbms
